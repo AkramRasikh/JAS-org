@@ -1,16 +1,12 @@
-import {
-  contentfulClient,
-  contentfulManagementClient,
-} from '../utils/contentful';
+import loadContentfulEntries from '@/api/load-entries';
+import { contentfulManagementClient } from '../utils/contentful';
 
 const Home = (props) => {
-  console.log('## props: ', props);
   const ids = props?.items.map((item) => ({
     id: item.sys.id,
     isPublished: item.sys.publishedAt,
     isArchived: item.sys.archivedAt !== undefined,
   }));
-  console.log('## ids: ', ids);
 
   const publishEntryById = async (entryId) => {
     try {
@@ -262,35 +258,14 @@ const Home = (props) => {
 };
 
 export async function getStaticProps() {
-  // const getEntriesViaManagementAPI = async () => {
-  //   try {
-  //     // Fetch entries using the Contentful Management API
-  //     const space = await contentfulManagementClient.getSpace(
-  //       process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
-  //     );
-  //     const environment = await space.getEnvironment('master');
-  //     const entries = await environment.getEntries();
-
-  //     console.log('Entries via Management API:', entries.items);
-  //     return entries.items;
-  //   } catch (error) {
-  //     console.error('Error fetching entries via Management API:', error);
-  //     throw error;
-  //   }
-  // };
+  const isAdmin = false;
 
   try {
-    const space = await contentfulManagementClient.getSpace(
-      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
-    );
-    const environment = await space.getEnvironment('master');
-    const entries = await environment.getEntries();
-
-    console.log('## Entries via Management API:', entries.items);
+    const items = await loadContentfulEntries(isAdmin);
 
     return {
       props: {
-        items: entries.items,
+        items,
       },
     };
   } catch (error) {
