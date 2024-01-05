@@ -1,5 +1,6 @@
 import loadContentfulEntries from '@/api/load-entries';
 import { contentfulManagementClient } from '../utils/contentful';
+import Link from 'next/link';
 
 const Home = (props) => {
   const ids = props?.items.map((item) => ({
@@ -213,41 +214,44 @@ const Home = (props) => {
     <div>
       <h1>Justice Africa Sudan</h1>
       <div>
-        {ids?.map((contentfulId) => {
-          const isPublished = Boolean(contentfulId.isPublished);
-          const isArchived = Boolean(contentfulId.isArchived);
+        {ids?.map((contentfuObj) => {
+          const isPublished = Boolean(contentfuObj.isPublished);
+          const isArchived = Boolean(contentfuObj.isArchived);
 
           return (
-            <div key={contentfulId}>
-              <p>{contentfulId.id}</p>
-              <button onClick={() => updateContentfulEntry(contentfulId.id)}>
+            <div key={contentfuObj.id}>
+              <p>{contentfuObj.id}</p>
+              <button onClick={() => updateContentfulEntry(contentfuObj.id)}>
                 Update entry
               </button>
-              <button onClick={() => deleteEntryById(contentfulId.id)}>
+              <button onClick={() => deleteEntryById(contentfuObj.id)}>
                 Delete entry
               </button>
               <span>isPublished: {isPublished ? <>✅</> : <>❌</>}</span>
               <span>isArchived: {isArchived ? <>✅</> : <>❌</>}</span>
               <div>
                 {isPublished ? (
-                  <button onClick={() => unpublishEntryById(contentfulId.id)}>
+                  <button onClick={() => unpublishEntryById(contentfuObj.id)}>
                     Unpublish entry
                   </button>
                 ) : (
-                  <button onClick={() => publishEntryById(contentfulId.id)}>
+                  <button onClick={() => publishEntryById(contentfuObj.id)}>
                     Publish entry
                   </button>
                 )}
                 {isArchived ? (
-                  <button onClick={() => unarchiveEntryById(contentfulId.id)}>
+                  <button onClick={() => unarchiveEntryById(contentfuObj.id)}>
                     Unarchive entry
                   </button>
                 ) : (
-                  <button onClick={() => archiveEntryById(contentfulId.id)}>
+                  <button onClick={() => archiveEntryById(contentfuObj.id)}>
                     Archive entry
                   </button>
                 )}
               </div>
+              <Link href={`/blog/${contentfuObj.id?.toLowerCase()}`}>
+                Go to New Discussion Page
+              </Link>
             </div>
           );
         })}
