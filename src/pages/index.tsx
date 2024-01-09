@@ -1,13 +1,22 @@
 import loadContentfulEntries from '@/api/load-entries';
 import { contentfulManagementClient } from '../utils/contentful';
 import Link from 'next/link';
+import BlogPostEntry from '@/components/BlogPostEntry';
 
 const Home = (props) => {
-  const ids = props?.items.map((item) => ({
-    id: item.sys.id,
-    isPublished: item.sys.publishedAt,
-    isArchived: item.sys.archivedAt !== undefined,
-  }));
+  const contentfulData = props?.items.map((item) => {
+    const title = item.fields.title['en-US'];
+    const textContent =
+      item.fields.richText['en-US'].content[0].content[0].value;
+
+    return {
+      id: item.sys.id,
+      isPublished: item.sys.publishedAt,
+      isArchived: item.sys.archivedAt !== undefined,
+      title,
+      textContent,
+    };
+  });
 
   const publishEntryById = async (entryId) => {
     try {
@@ -116,7 +125,7 @@ const Home = (props) => {
       console.error('Error updating Contentful entry:', error);
     }
   };
-  const createBlogPost = async () => {
+  const createBlogPost = async (title, richText) => {
     try {
       // Get the space
 
@@ -130,7 +139,7 @@ const Home = (props) => {
       // Create a new entry
       const entry = await environment.createEntry('blogPost', {
         fields: {
-          title: { 'en-US': 'This rasss draft!' },
+          title: { 'en-US': title },
           richText: {
             'en-US': {
               nodeType: 'document',
@@ -142,7 +151,7 @@ const Home = (props) => {
                   content: [
                     {
                       nodeType: 'text',
-                      value: 'Yah dun kno!!!',
+                      value: richText,
                       marks: [],
                       data: {},
                     },
@@ -214,13 +223,15 @@ const Home = (props) => {
     <div>
       <h1>Justice Africa Sudan</h1>
       <div>
-        {ids?.map((contentfuObj) => {
+        {contentfulData?.map((contentfuObj) => {
           const isPublished = Boolean(contentfuObj.isPublished);
           const isArchived = Boolean(contentfuObj.isArchived);
 
           return (
             <div key={contentfuObj.id}>
               <p>{contentfuObj.id}</p>
+              <h1>{contentfuObj.title}</h1>
+              <p>{contentfuObj.textContent}</p>
               <button onClick={() => updateContentfulEntry(contentfuObj.id)}>
                 Update entry
               </button>
@@ -256,13 +267,13 @@ const Home = (props) => {
           );
         })}
       </div>
-      <button onClick={createBlogPost}>Add entry</button>
+      <BlogPostEntry createBlogPost={createBlogPost} />
     </div>
   );
 };
 
 export async function getStaticProps() {
-  const isAdmin = false;
+  const isAdmin = true;
 
   try {
     const items = await loadContentfulEntries(isAdmin);
