@@ -26,4 +26,38 @@ const loadContentfulEntries = async (isAdmin: boolean = true) => {
   return items;
 };
 
+export const getBlogContentTypes = async () => {
+  try {
+    const space = await contentfulManagementClient.getSpace(
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
+    );
+    const environment = await space.getEnvironment('master');
+
+    const contentTypes = await environment.getContentTypes();
+
+    const blogPostContentType = contentTypes.items.find(
+      (contentType) => contentType.name === 'Blog Post',
+    );
+
+    const blogContentFields = blogPostContentType.fields;
+    const titleField = blogContentFields.find((field) => field.id === 'title');
+    const blogTextField = blogContentFields.find(
+      (field) => field.id === 'richText',
+    );
+
+    return {
+      title: {
+        validation: titleField?.validations,
+        required: titleField?.required,
+      },
+      richText: {
+        validation: blogTextField?.validations,
+        required: blogTextField?.required,
+      },
+    };
+  } catch (error) {
+    console.error('Error retrieving content types:', error);
+  }
+};
+
 export default loadContentfulEntries;

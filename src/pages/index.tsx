@@ -3,16 +3,25 @@ import { contentfulManagementClient } from '../utils/contentful';
 import Link from 'next/link';
 import BlogPostEntry from '@/components/BlogPostEntry';
 
+export const isAdmin = true;
+
 const Home = (props) => {
   const contentfulData = props?.items.map((item) => {
-    const title = item.fields.title['en-US'];
-    const textContent =
-      item.fields.richText['en-US'].content[0].content[0].value;
+    const title = isAdmin ? item.fields.title['en-US'] : item.fields.title;
+
+    const textContent = isAdmin
+      ? item.fields.richText['en-US'].content[0].content[0].value
+      : item.fields.richText.content.map((nestedRichText) => {
+          const textNode = nestedRichText.content[0];
+          const textContent = textNode ? textNode.value : '';
+
+          return textContent;
+        });
 
     return {
       id: item.sys.id,
-      isPublished: item.sys.publishedAt,
-      isArchived: item.sys.archivedAt !== undefined,
+      isPublished: isAdmin && item.sys.publishedAt,
+      isArchived: isAdmin && item.sys.archivedAt !== undefined,
       title,
       textContent,
     };
@@ -85,7 +94,7 @@ const Home = (props) => {
       throw error;
     }
   };
-  const updateContentfulEntry = async (entryId) => {
+  const updateContentfulEntry = async ({ entryId, title, content }) => {
     try {
       const space = await contentfulManagementClient.getSpace(
         process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
@@ -95,7 +104,7 @@ const Home = (props) => {
 
       entry.fields = {
         ...entry.fields,
-        title: { 'en-US': 'This rasss draft! (Edited!!)' },
+        title: { 'en-US': title },
         richText: {
           'en-US': {
             nodeType: 'document',
@@ -107,7 +116,7 @@ const Home = (props) => {
                 content: [
                   {
                     nodeType: 'text',
-                    value: 'Yah dun kno!!!',
+                    value: content,
                     marks: [],
                     data: {},
                   },
@@ -123,49 +132,6 @@ const Home = (props) => {
       console.log('Entry updated successfully.');
     } catch (error) {
       console.error('Error updating Contentful entry:', error);
-    }
-  };
-  const createBlogPost = async (title, richText) => {
-    try {
-      // Get the space
-
-      const space = await contentfulManagementClient.getSpace(
-        process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
-      );
-      const environment = await space.getEnvironment('master');
-
-      console.log('## space: ', space);
-
-      // Create a new entry
-      const entry = await environment.createEntry('blogPost', {
-        fields: {
-          title: { 'en-US': title },
-          richText: {
-            'en-US': {
-              nodeType: 'document',
-              data: {},
-              content: [
-                {
-                  nodeType: 'paragraph',
-                  data: {},
-                  content: [
-                    {
-                      nodeType: 'text',
-                      value: richText,
-                      marks: [],
-                      data: {},
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        },
-      });
-
-      console.log('Blog post created:', entry);
-    } catch (error) {
-      console.error('Error creating blog post:', error);
     }
   };
 
@@ -195,7 +161,7 @@ const Home = (props) => {
     }
   };
 
-  const unarchiveEntryById = async (entryId) => {
+  const unarchiveEntryById = async ({ entryId }) => {
     try {
       // Fetch the entry using the Contentful Management API
       const entry = await contentfulManagementClient
@@ -232,34 +198,52 @@ const Home = (props) => {
               <p>{contentfuObj.id}</p>
               <h1>{contentfuObj.title}</h1>
               <p>{contentfuObj.textContent}</p>
-              <button onClick={() => updateContentfulEntry(contentfuObj.id)}>
-                Update entry
-              </button>
-              <button onClick={() => deleteEntryById(contentfuObj.id)}>
-                Delete entry
-              </button>
-              <span>isPublished: {isPublished ? <>✅</> : <>❌</>}</span>
-              <span>isArchived: {isArchived ? <>✅</> : <>❌</>}</span>
-              <div>
-                {isPublished ? (
-                  <button onClick={() => unpublishEntryById(contentfuObj.id)}>
-                    Unpublish entry
+              {isAdmin && (
+                <>
+                  <button
+                    onClick={() => updateContentfulEntry(contentfuObj.id)}
+                  >
+                    Update entry
                   </button>
-                ) : (
-                  <button onClick={() => publishEntryById(contentfuObj.id)}>
-                    Publish entry
+                  <button onClick={() => deleteEntryById(contentfuObj.id)}>
+                    Delete entry
                   </button>
-                )}
-                {isArchived ? (
-                  <button onClick={() => unarchiveEntryById(contentfuObj.id)}>
-                    Unarchive entry
-                  </button>
-                ) : (
-                  <button onClick={() => archiveEntryById(contentfuObj.id)}>
-                    Archive entry
-                  </button>
-                )}
-              </div>
+                  <span>isPublished: {isPublished ? <>✅</> : <>❌</>}</span>
+                  <span>isArchived: {isArchived ? <>✅</> : <>❌</>}</span>
+
+                  <div>
+                    {isPublished ? (
+                      <button
+                        onClick={() => unpublishEntryById(contentfuObj.id)}
+                      >
+                        Unpublish entry
+                      </button>
+                    ) : (
+                      <button onClick={() => publishEntryById(contentfuObj.id)}>
+                        Publish entry
+                      </button>
+                    )}
+                    {isArchived ? (
+                      <button
+                        onClick={() => unarchiveEntryById(contentfuObj.id)}
+                      >
+                        Unarchive entry
+                      </button>
+                    ) : (
+                      <button onClick={() => archiveEntryById(contentfuObj.id)}>
+                        Archive entry
+                      </button>
+                    )}
+                  </div>
+                  <BlogPostEntry
+                    id={contentfuObj.id}
+                    updateBlogPost={updateContentfulEntry}
+                    preTitle={contentfuObj.title}
+                    preRichContent={contentfuObj.textContent}
+                  />
+                </>
+              )}
+
               <Link href={`/blog/${contentfuObj.id?.toLowerCase()}`}>
                 Go to New Discussion Page
               </Link>
@@ -267,14 +251,12 @@ const Home = (props) => {
           );
         })}
       </div>
-      <BlogPostEntry createBlogPost={createBlogPost} />
+      {isAdmin && <Link href={'/add-blog'}>Add blog entry</Link>}
     </div>
   );
 };
 
 export async function getStaticProps() {
-  const isAdmin = true;
-
   try {
     const items = await loadContentfulEntries(isAdmin);
 

@@ -1,9 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const BlogPostEntry = ({ createBlogPost }) => {
+const BlogPostEntry = ({
+  id,
+  createBlogPost,
+  updateBlogPost,
+  preTitle,
+  preRichContent,
+  titleMinLength,
+  titleMaxLength,
+}) => {
+  const isAnEdit = Boolean(id && (preTitle || preRichContent));
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (preTitle || preRichContent) {
+      setContent(preRichContent);
+      setTitle(preTitle);
+    }
+  }, []);
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
@@ -24,7 +41,9 @@ const BlogPostEntry = ({ createBlogPost }) => {
       return;
     }
 
-    await createBlogPost(title, content);
+    isAnEdit
+      ? await updateBlogPost({ entryId: id, title, content })
+      : await createBlogPost({ title, content });
   };
 
   return (
@@ -37,7 +56,14 @@ const BlogPostEntry = ({ createBlogPost }) => {
           name='title'
           value={title}
           onChange={handleTitleChange}
+          minLength={titleMinLength || 0}
+          maxLength={titleMaxLength || Infinity}
         />
+        {isAnEdit && (
+          <span style={{ color: 'gray' }}>
+            {title.length}/{titleMaxLength} characters
+          </span>
+        )}
       </div>
 
       <div>
