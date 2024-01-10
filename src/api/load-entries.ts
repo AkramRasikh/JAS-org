@@ -12,6 +12,15 @@ const getEntriesAdmin = async () => {
 
   return items;
 };
+const getEntryByIdAdmin = async (id) => {
+  const space = await contentfulManagementClient.getSpace(
+    process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
+  );
+  const environment = await space.getEnvironment('master');
+  const entry = await environment.getEntry(id);
+
+  return entry;
+};
 
 const getEntriesViewer = async () => {
   const { items } = await contentfulClient.getEntries({
@@ -19,6 +28,39 @@ const getEntriesViewer = async () => {
   });
 
   return items;
+};
+const getEntryByIdViewer = async (id) => {
+  const entry = await contentfulClient.getEntry(id);
+
+  return entry;
+};
+
+export const loadContentfulEntryById = async (isAdmin: boolean = true, id) => {
+  const entry = isAdmin
+    ? await getEntryByIdAdmin(id)
+    : await getEntryByIdViewer(id);
+
+  const title = isAdmin ? entry.fields.title['en-US'] : entry.fields.title;
+
+  const textContent = isAdmin
+    ? entry.fields.richText['en-US'].content[0].content[0].value
+    : entry.fields.richText.content.map((nestedRichText) => {
+        const textNode = nestedRichText.content[0];
+        const textContent = textNode ? textNode.value : '';
+
+        return textContent;
+      });
+
+  return {
+    id: entry.sys.id,
+    title,
+    textContent,
+    // isArchived: isAdmin && entry.sys.archivedAt !== undefined,
+    // publishedAt: entry.sys?.publishedAt, // take over isPublished
+    // createdAt: isAdmin ? entry.sys.createdAt : undefined,
+    // updatedAt: isAdmin ? entry.sys.updatedAt : undefined,
+    // archivedAt: isAdmin ? entry.sys.archivedAt : undefined,
+  };
 };
 
 const loadContentfulEntries = async (isAdmin: boolean = true) => {

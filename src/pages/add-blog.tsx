@@ -12,8 +12,6 @@ const AddBlogPage = (props) => {
     (rule) => rule.size,
   );
 
-  // console.log('## titleValidation: ', JSON.stringify(titleValidation));
-
   const router = useRouter();
 
   useEffect(() => {

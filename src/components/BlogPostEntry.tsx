@@ -59,7 +59,7 @@ const BlogPostEntry = ({
           minLength={titleMinLength || 0}
           maxLength={titleMaxLength || Infinity}
         />
-        {isAnEdit && (
+        {titleMaxLength && (
           <span style={{ color: 'gray' }}>
             {title.length}/{titleMaxLength} characters
           </span>

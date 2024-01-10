@@ -20,10 +20,13 @@ const Home = (props) => {
 
     return {
       id: item.sys.id,
-      isPublished: isAdmin && item.sys.publishedAt,
-      isArchived: isAdmin && item.sys.archivedAt !== undefined,
       title,
       textContent,
+      isArchived: isAdmin && item.sys.archivedAt !== undefined,
+      publishedAt: item.sys.publishedAt, // take over isPublished
+      createdAt: isAdmin ? item.sys.createdAt : undefined,
+      updatedAt: isAdmin ? item.sys.updatedAt : undefined,
+      archivedAt: isAdmin ? item.sys.archivedAt : undefined,
     };
   });
 
@@ -190,14 +193,12 @@ const Home = (props) => {
       <h1>Justice Africa Sudan</h1>
       <div>
         {contentfulData?.map((contentfuObj) => {
-          const isPublished = Boolean(contentfuObj.isPublished);
+          const isPublished = Boolean(contentfuObj.publishedAt);
           const isArchived = Boolean(contentfuObj.isArchived);
 
           return (
             <div key={contentfuObj.id}>
-              <p>{contentfuObj.id}</p>
               <h1>{contentfuObj.title}</h1>
-              <p>{contentfuObj.textContent}</p>
               {isAdmin && (
                 <>
                   <button
@@ -244,8 +245,8 @@ const Home = (props) => {
                 </>
               )}
 
-              <Link href={`/blog/${contentfuObj.id?.toLowerCase()}`}>
-                Go to New Discussion Page
+              <Link href={`/blog/${contentfuObj.id}`}>
+                Continue reading blog!
               </Link>
             </div>
           );

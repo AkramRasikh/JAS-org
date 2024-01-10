@@ -1,16 +1,42 @@
-import { useRouter } from 'next/router';
 import BlogPost from '../../components/BlogPost';
+import { loadContentfulEntryById } from '@/api/load-entries';
+import { isAdmin } from '..';
 
-const BlogPostPage = () => {
-  const router = useRouter();
-  const { slug } = router.query;
+const BlogPostPage = (props) => {
+  const entryData = props?.entryData;
 
-  const blogPost = {
-    title: 'Sample Blog Post',
-    content: 'This is the content of the sample blog post.',
-  };
+  if (!entryData) {
+    return null;
+  }
 
-  return <BlogPost title={blogPost.title} slug={slug} />;
+  return (
+    <BlogPost
+      title={entryData.title}
+      content={entryData.textContent}
+      slug={entryData.id}
+    />
+  );
 };
+
+export async function getServerSideProps({ query }) {
+  const slug = query.slug;
+
+  try {
+    const entryData = await loadContentfulEntryById(isAdmin, slug);
+
+    return {
+      props: {
+        entryData,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return {
+      props: {
+        entryData: null,
+      },
+    };
+  }
+}
 
 export default BlogPostPage;
