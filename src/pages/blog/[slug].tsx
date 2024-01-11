@@ -14,6 +14,7 @@ const BlogPostPage = (props) => {
       title={entryData.title}
       content={entryData.textContent}
       slug={entryData.id}
+      publishedAt={entryData.publishedAt}
     />
   );
 };

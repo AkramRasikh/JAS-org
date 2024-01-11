@@ -55,11 +55,11 @@ export const loadContentfulEntryById = async (isAdmin: boolean = true, id) => {
     id: entry.sys.id,
     title,
     textContent,
-    // isArchived: isAdmin && entry.sys.archivedAt !== undefined,
-    // publishedAt: entry.sys?.publishedAt, // take over isPublished
-    // createdAt: isAdmin ? entry.sys.createdAt : undefined,
-    // updatedAt: isAdmin ? entry.sys.updatedAt : undefined,
-    // archivedAt: isAdmin ? entry.sys.archivedAt : undefined,
+    publishedAt:
+      isAdmin && entry.sys?.publishedAt ? entry.sys.publishedAt : undefined, // take over isPublished
+    updatedAt:
+      isAdmin && entry.sys?.updatedAt ? entry.sys.updatedAt : undefined,
+    createdAt: isAdmin ? entry.sys.createdAt : undefined,
   };
 };
 
