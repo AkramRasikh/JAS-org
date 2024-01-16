@@ -1,16 +1,14 @@
 import { isAdmin } from '@/pages';
-import { DiscussionEmbed } from 'disqus-react';
+import DisqusComments from './DisqusComments';
 
-const DisqusComments = ({ slug, title }) => {
-  const disqusShortname = process.env.NEXT_PUBLIC_DISQUS_SHORTNAME as string;
-
-  const disqusConfig = {
-    identifier: slug.toLowerCase(),
-    title: title,
-    url: `${process.env.NEXT_PUBLIC_DISQUS_URL}/blog/${slug}`,
-  };
-
-  return <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />;
+// Options for formatting the date
+const options = {
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
 };
 
 const BlogPost = ({ title, content, slug, publishedAt, updatedAt }) => {
@@ -28,16 +26,6 @@ const BlogPost = ({ title, content, slug, publishedAt, updatedAt }) => {
     updatedAtDateObject = new Date(updatedAt);
     formattedUpdatedDate = updatedAtDateObject.toLocaleString('en-US', options);
   }
-
-  // Options for formatting the date
-  const options = {
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  };
 
   // Format the Date object into a readable string
   const formattedPublishedDate = publishedDateObject.toLocaleString(

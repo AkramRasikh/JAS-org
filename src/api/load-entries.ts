@@ -8,7 +8,7 @@ const getEntriesAdmin = async () => {
     process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
   );
   const environment = await space.getEnvironment('master');
-  const { items } = await environment.getEntries();
+  const { items } = await environment.getEntries({ content_type: 'blogPost' });
 
   return items;
 };
@@ -56,10 +56,11 @@ export const loadContentfulEntryById = async (isAdmin: boolean = true, id) => {
     title,
     textContent,
     publishedAt:
-      isAdmin && entry.sys?.publishedAt ? entry.sys.publishedAt : undefined, // take over isPublished
-    updatedAt:
-      isAdmin && entry.sys?.updatedAt ? entry.sys.updatedAt : undefined,
-    createdAt: isAdmin ? entry.sys.createdAt : undefined,
+      isAdmin && entry.sys?.publishedAt
+        ? entry.sys.publishedAt
+        : entry.sys.createdAt, // take over isPublished
+    updatedAt: isAdmin && entry.sys?.updatedAt ? entry.sys.updatedAt : null,
+    createdAt: isAdmin ? entry.sys.createdAt : null,
   };
 };
 

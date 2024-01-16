@@ -1,6 +1,7 @@
 import BlogPost from '../../components/BlogPost';
 import { loadContentfulEntryById } from '@/api/load-entries';
 import { isAdmin } from '..';
+import Link from 'next/link';
 
 const BlogPostPage = (props) => {
   const entryData = props?.entryData;
@@ -10,12 +11,16 @@ const BlogPostPage = (props) => {
   }
 
   return (
-    <BlogPost
-      title={entryData.title}
-      content={entryData.textContent}
-      slug={entryData.id}
-      publishedAt={entryData.publishedAt}
-    />
+    <div>
+      <Link href={'/'}>Back home!!</Link>
+      <BlogPost
+        title={entryData.title}
+        content={entryData.textContent}
+        slug={entryData.id}
+        publishedAt={entryData.publishedAt}
+        updatedAt={entryData.updatedAt}
+      />
+    </div>
   );
 };
 
