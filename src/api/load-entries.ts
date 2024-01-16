@@ -15,7 +15,7 @@ const getEntriesAdmin = async () => {
   const environment = await getSpaceAndEnv();
   const { items } = await environment.getEntries({ content_type: 'blogPost' });
 
-  return items;
+  return items.filter((item) => Object.keys(item.fields).length !== 0);
 };
 const getEntryByIdAdmin = async (id) => {
   const environment = await getSpaceAndEnv();
@@ -34,7 +34,7 @@ const getEntriesViewer = async () => {
     content_type: 'blogPost',
   });
 
-  return items;
+  return items.filter((item) => Object.keys(item.fields).length !== 0);
 };
 const getEntryByIdViewer = async (id) => {
   const entry = await contentfulClient.getEntry(id);
