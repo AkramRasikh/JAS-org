@@ -3,22 +3,29 @@ import {
   contentfulManagementClient,
 } from '@/utils/contentful';
 
-const getEntriesAdmin = async () => {
+const getSpaceAndEnv = async () => {
   const space = await contentfulManagementClient.getSpace(
     process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
   );
   const environment = await space.getEnvironment('master');
+  return environment;
+};
+
+const getEntriesAdmin = async () => {
+  const environment = await getSpaceAndEnv();
   const { items } = await environment.getEntries({ content_type: 'blogPost' });
 
   return items;
 };
 const getEntryByIdAdmin = async (id) => {
-  const space = await contentfulManagementClient.getSpace(
-    process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
-  );
-  const environment = await space.getEnvironment('master');
+  const environment = await getSpaceAndEnv();
   const entry = await environment.getEntry(id);
+  return entry;
+};
 
+const getAuthorByIdAdmin = async (id) => {
+  const environment = await getSpaceAndEnv();
+  const entry = await environment.getEntry(id);
   return entry;
 };
 
@@ -42,6 +49,17 @@ export const loadContentfulEntryById = async (isAdmin: boolean = true, id) => {
 
   const title = isAdmin ? entry.fields.title['en-US'] : entry.fields.title;
 
+  let authorName = null;
+
+  if (!isAdmin && entry.fields?.author) {
+    authorName = entry.fields?.author.fields.name;
+  } else if (entry.fields?.author && entry.fields?.author['en-US']) {
+    const authorDetails = await getAuthorByIdAdmin(
+      entry.fields.author['en-US'].sys.id,
+    );
+    authorName = authorDetails.fields.name['en-US'];
+  }
+
   const textContent = isAdmin
     ? entry.fields.richText['en-US'].content[0].content[0].value
     : entry.fields.richText.content.map((nestedRichText) => {
@@ -55,6 +73,7 @@ export const loadContentfulEntryById = async (isAdmin: boolean = true, id) => {
     id: entry.sys.id,
     title,
     textContent,
+    authorName,
     publishedAt:
       isAdmin && entry.sys?.publishedAt
         ? entry.sys.publishedAt
@@ -71,11 +90,7 @@ const loadContentfulEntries = async (isAdmin: boolean = true) => {
 
 export const getBlogContentTypes = async () => {
   try {
-    const space = await contentfulManagementClient.getSpace(
-      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
-    );
-    const environment = await space.getEnvironment('master');
-
+    const environment = await getSpaceAndEnv();
     const contentTypes = await environment.getContentTypes();
 
     const blogPostContentType = contentTypes.items.find(

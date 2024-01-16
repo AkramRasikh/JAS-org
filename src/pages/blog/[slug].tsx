@@ -19,6 +19,7 @@ const BlogPostPage = (props) => {
         slug={entryData.id}
         publishedAt={entryData.publishedAt}
         updatedAt={entryData.updatedAt}
+        authorName={entryData?.authorName}
       />
     </div>
   );

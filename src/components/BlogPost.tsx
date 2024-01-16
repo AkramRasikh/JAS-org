@@ -1,7 +1,6 @@
 import { isAdmin } from '@/pages';
 import DisqusComments from './DisqusComments';
 
-// Options for formatting the date
 const options = {
   hour: 'numeric',
   minute: 'numeric',
@@ -11,7 +10,14 @@ const options = {
   day: 'numeric',
 };
 
-const BlogPost = ({ title, content, slug, publishedAt, updatedAt }) => {
+const BlogPost = ({
+  title,
+  content,
+  slug,
+  publishedAt,
+  updatedAt,
+  authorName,
+}) => {
   if (!slug || !title) {
     return null;
   }
@@ -44,6 +50,7 @@ const BlogPost = ({ title, content, slug, publishedAt, updatedAt }) => {
           <p>Last edited: {formattedPublishedDate}</p>
         </>
       )}
+      {authorName && <p>Author: {authorName}</p>}
     </div>
   );
 };
