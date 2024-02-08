@@ -17,6 +17,7 @@ const BlogPost = ({
   publishedAt,
   updatedAt,
   authorName,
+  archivedAt,
 }) => {
   if (!slug || !title) {
     return null;
@@ -48,6 +49,14 @@ const BlogPost = ({
       {isAdmin && hasBeenUpdated && (
         <>
           <p>Last edited: {formattedPublishedDate}</p>
+        </>
+      )}
+      {isAdmin && archivedAt && (
+        <>
+          <p>
+            Archived at: {new Date(archivedAt).toLocaleString('en-US', options)}
+            {/* not efficient */}
+          </p>
         </>
       )}
       {authorName && <p>Author: {authorName}</p>}

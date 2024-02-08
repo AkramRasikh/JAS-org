@@ -83,6 +83,7 @@ export const loadContentfulEntryById = async (isAdmin: boolean = true, id) => {
     jsxTextContent: isAdmin
       ? entry.fields.richText['en-US'].content
       : entry.fields.richText.content,
+    archivedAt: entry.sys?.archivedAt || null,
   };
 };
 
