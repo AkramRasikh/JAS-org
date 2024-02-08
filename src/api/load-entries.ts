@@ -80,6 +80,9 @@ export const loadContentfulEntryById = async (isAdmin: boolean = true, id) => {
         : entry.sys.createdAt, // take over isPublished
     updatedAt: isAdmin && entry.sys?.updatedAt ? entry.sys.updatedAt : null,
     createdAt: isAdmin ? entry.sys.createdAt : null,
+    jsxTextContent: isAdmin
+      ? entry.fields.richText['en-US'].content
+      : entry.fields.richText.content,
   };
 };
 
