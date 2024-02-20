@@ -12,6 +12,7 @@ const BlogPostEntry = ({
   const isAnEdit = Boolean(id && (preTitle || preRichContent));
 
   const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
   const [content, setContent] = useState('');
   const [error, setError] = useState('');
 
@@ -24,6 +25,11 @@ const BlogPostEntry = ({
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
+    setError('');
+  };
+
+  const handleAuthorChange = (event) => {
+    setAuthor(event.target.value);
     setError('');
   };
 
@@ -76,6 +82,23 @@ const BlogPostEntry = ({
           value={content}
           onChange={handleContentChange}
         />
+      </div>
+      <div>
+        <label htmlFor='author'>Author:</label>
+        <input
+          type='text'
+          id='author'
+          name='author'
+          value={author}
+          onChange={handleAuthorChange}
+          // minLength={authorMinLength || 0}
+          // maxLength={authorMaxLength || Infinity}
+        />
+        {/* {authorMaxLength && (
+          <span style={{ color: 'gray' }}>
+            {author.length}/{authorMaxLength} characters
+          </span>
+        )} */}
       </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
