@@ -46,6 +46,8 @@ const BlogPostEntry = ({
       : await createBlogPost({ title, content });
   };
 
+  const disableSubmit = !title?.trim() || !content?.trim;
+
   return (
     <form onSubmit={handleSubmit}>
       <div>
@@ -78,7 +80,9 @@ const BlogPostEntry = ({
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      <button type='submit'>Submit</button>
+      <button type='submit' disabled={disableSubmit}>
+        Submit
+      </button>
     </form>
   );
 };
