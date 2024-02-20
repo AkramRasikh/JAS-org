@@ -191,6 +191,7 @@ const Home = (props) => {
   return (
     <div>
       <h1>Justice Africa Sudan</h1>
+      {isAdmin && <Link href={'/add-blog'}>Add blog entry</Link>}
       <div>
         {contentfulData?.map((contentfuObj) => {
           const isPublished = Boolean(contentfuObj.publishedAt);
@@ -252,7 +253,6 @@ const Home = (props) => {
           );
         })}
       </div>
-      {isAdmin && <Link href={'/add-blog'}>Add blog entry</Link>}
     </div>
   );
 };
