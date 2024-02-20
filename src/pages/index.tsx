@@ -2,10 +2,32 @@ import loadContentfulEntries from '@/api/load-entries';
 import { contentfulManagementClient } from '../utils/contentful';
 import Link from 'next/link';
 import BlogPostEntry from '@/components/BlogPostEntry';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 export const isAdmin = true;
 
 const Home = (props) => {
+  const router = useRouter();
+  const [showSuccessBanner, setShowSuccessBanner] = useState<boolean>(false);
+
+  useEffect(() => {
+    const createdStatus = router?.query?.created;
+    let timeoutId;
+    if (createdStatus === 'true') {
+      // can tie it to bool
+      setShowSuccessBanner(true);
+      timeoutId = setTimeout(() => {
+        setShowSuccessBanner(false);
+      }, 3000);
+
+      // Cleanup: Clear the timeout if the component unmounts before 3 seconds
+    }
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
   const contentfulData = props?.items.map((item) => {
     const title = isAdmin ? item.fields.title['en-US'] : item.fields.title;
 
@@ -192,6 +214,11 @@ const Home = (props) => {
     <div>
       <h1>Justice Africa Sudan</h1>
       {isAdmin && <Link href={'/add-blog'}>Add blog entry</Link>}
+      {showSuccessBanner && (
+        <div>
+          <h2>New blog created!!! </h2>
+        </div>
+      )}
       <div>
         {contentfulData?.map((contentfuObj) => {
           const isPublished = Boolean(contentfuObj.publishedAt);

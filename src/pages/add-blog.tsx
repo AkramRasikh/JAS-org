@@ -1,6 +1,7 @@
 import BlogPostEntry from '@/components/BlogPostEntry';
 import { contentfulManagementClient } from '@/utils/contentful';
 import { useRouter } from 'next/router';
+
 import { useEffect } from 'react';
 import { isAdmin } from '.';
 import { getBlogContentTypes } from '@/api/load-entries';
@@ -56,7 +57,10 @@ const AddBlogPage = (props) => {
       });
 
       console.log('Blog post created:', entry);
-      router.push('/');
+      router.push({
+        pathname: '/',
+        query: { created: 'true' },
+      });
     } catch (error) {
       console.error('Error creating blog post:', error);
     }
