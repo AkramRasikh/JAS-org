@@ -92,6 +92,30 @@ const loadContentfulEntries = async (isAdmin: boolean = true) => {
   return items;
 };
 
+export const getAuthorContentTypes = async () => {
+  try {
+    const environment = await getSpaceAndEnv();
+    const contentTypes = await environment.getContentTypes();
+
+    const authorContentType = contentTypes.items.find(
+      (contentType) => contentType.name === 'author',
+    );
+
+    const authorFields = authorContentType.fields;
+
+    const nameField = authorFields.find((field) => field.name === 'name');
+
+    return {
+      name: {
+        validation: nameField?.validations,
+        required: nameField?.required,
+      },
+    };
+  } catch (error) {
+    console.error('Error retrieving content types:', error);
+  }
+};
+
 export const getBlogContentTypes = async () => {
   try {
     const environment = await getSpaceAndEnv();

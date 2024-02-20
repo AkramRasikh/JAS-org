@@ -8,6 +8,7 @@ const BlogPostEntry = ({
   preRichContent,
   titleMinLength,
   titleMaxLength,
+  authorMaxLength,
 }) => {
   const isAnEdit = Boolean(id && (preTitle || preRichContent));
 
@@ -52,7 +53,7 @@ const BlogPostEntry = ({
       : await createBlogPost({ title, content });
   };
 
-  const disableSubmit = !title?.trim() || !content?.trim;
+  const disableSubmit = !title?.trim() || !content?.trim();
 
   return (
     <form onSubmit={handleSubmit}>
@@ -91,14 +92,16 @@ const BlogPostEntry = ({
           name='author'
           value={author}
           onChange={handleAuthorChange}
-          // minLength={authorMinLength || 0}
-          // maxLength={authorMaxLength || Infinity}
+          maxLength={authorMaxLength || Infinity}
         />
-        {/* {authorMaxLength && (
-          <span style={{ color: 'gray' }}>
-            {author.length}/{authorMaxLength} characters
-          </span>
-        )} */}
+        {authorMaxLength && (
+          <div>
+            <span style={{ color: 'gray' }}>
+              {author.length}/{authorMaxLength} characters
+            </span>
+            <span>Remember, this field is optional</span>
+          </div>
+        )}
       </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}

@@ -4,12 +4,16 @@ import { useRouter } from 'next/router';
 
 import { useEffect } from 'react';
 import { isAdmin } from '.';
-import { getBlogContentTypes } from '@/api/load-entries';
+import { getAuthorContentTypes, getBlogContentTypes } from '@/api/load-entries';
 
 const AddBlogPage = (props) => {
-  const titleValidation = props.validationRules.title;
+  const titleValidation = props.blogValidationRules.title;
+  const authorValidation = props.authorValidationRules.name;
 
   const titleSizeValidation = titleValidation.validation.find(
+    (rule) => rule.size,
+  );
+  const authorSizeValidation = authorValidation.validation.find(
     (rule) => rule.size,
   );
 
@@ -77,6 +81,8 @@ const AddBlogPage = (props) => {
         createBlogPost={createBlogPost}
         titleMinLength={titleSizeValidation.size.min}
         titleMaxLength={titleSizeValidation.size.max}
+        authorMaxLength={authorSizeValidation.size.max}
+        // no need for min since it is optional
       />
     </div>
   );
@@ -85,12 +91,12 @@ const AddBlogPage = (props) => {
 export async function getStaticProps() {
   try {
     const validationRules = await getBlogContentTypes();
-
-    console.log('## validationRules: ', JSON.stringify(validationRules));
+    const validationRulesAuthor = await getAuthorContentTypes();
 
     return {
       props: {
-        validationRules,
+        blogValidationRules: validationRules,
+        authorValidationRules: validationRulesAuthor,
       },
     };
   } catch (error) {
