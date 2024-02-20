@@ -17,6 +17,7 @@ const Home = (props) => {
     if (createdStatus === 'true') {
       // can tie it to bool
       setShowSuccessBanner(true);
+      router.push('/');
       timeoutId = setTimeout(() => {
         setShowSuccessBanner(false);
       }, 3000);
