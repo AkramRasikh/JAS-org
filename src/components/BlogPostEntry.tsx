@@ -1,3 +1,4 @@
+import { createAuthorAPI } from '@/api/author';
 import React, { useEffect, useState } from 'react';
 
 const BlogPostEntry = ({
@@ -41,6 +42,10 @@ const BlogPostEntry = ({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    let authorEntryId;
+    if (author?.trim()) {
+      authorEntryId = await createAuthorAPI(author);
+    }
 
     // Check for empty fields
     if (!title.trim() || !content.trim()) {
@@ -49,8 +54,8 @@ const BlogPostEntry = ({
     }
 
     isAnEdit
-      ? await updateBlogPost({ entryId: id, title, content })
-      : await createBlogPost({ title, content });
+      ? await updateBlogPost({ entryId: id, title, content }) // need to add authorEntryId
+      : await createBlogPost({ title, content, authorEntryId });
   };
 
   const disableSubmit = !title?.trim() || !content?.trim();

@@ -26,7 +26,7 @@ const AddBlogPage = (props) => {
     }
   }, [isAdmin, router]);
 
-  const createBlogPost = async ({ title, content }) => {
+  const createBlogPost = async ({ title, content, authorEntryId }) => {
     try {
       const space = await contentfulManagementClient.getSpace(
         process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
@@ -55,6 +55,15 @@ const AddBlogPage = (props) => {
                   ],
                 },
               ],
+            },
+          },
+          author: {
+            'en-US': {
+              sys: {
+                type: 'Link',
+                linkType: 'Entry',
+                id: authorEntryId, // ID of the author entry you want to link
+              },
             },
           },
         },
