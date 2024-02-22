@@ -10,6 +10,7 @@ const BlogPostEntry = ({
   titleMinLength,
   titleMaxLength,
   authorMaxLength,
+  preAuthor,
 }) => {
   const isAnEdit = Boolean(id && (preTitle || preRichContent));
 
@@ -19,9 +20,13 @@ const BlogPostEntry = ({
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (preTitle || preRichContent) {
+    if (preTitle || preRichContent || preAuthor) {
       setContent(preRichContent);
       setTitle(preTitle);
+      setAuthor(preAuthor);
+    }
+    if (preAuthor) {
+      setAuthor(preAuthor);
     }
   }, []);
 

@@ -1,4 +1,4 @@
-import loadContentfulEntries from '@/api/load-entries';
+import { getEntriesOnLanding } from '@/api/load-entries';
 import { contentfulManagementClient } from '../utils/contentful';
 import Link from 'next/link';
 import BlogPostEntry from '@/components/BlogPostEntry';
@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 export const isAdmin = true;
 
 const Home = (props) => {
+  const contentfulData = props.items;
   const router = useRouter();
   const [showSuccessBanner, setShowSuccessBanner] = useState<boolean>(false);
 
@@ -28,30 +29,6 @@ const Home = (props) => {
       clearTimeout(timeoutId);
     };
   }, []);
-
-  const contentfulData = props?.items.map((item) => {
-    const title = isAdmin ? item.fields.title['en-US'] : item.fields.title;
-
-    const textContent = isAdmin
-      ? item.fields.richText['en-US'].content[0].content[0].value
-      : item.fields.richText.content.map((nestedRichText) => {
-          const textNode = nestedRichText.content[0];
-          const textContent = textNode ? textNode.value : '';
-
-          return textContent;
-        });
-
-    return {
-      id: item.sys.id,
-      title,
-      textContent,
-      isArchived: isAdmin && item.sys.archivedAt !== undefined,
-      publishedAt: item.sys.publishedAt, // take over isPublished
-      createdAt: isAdmin ? item.sys.createdAt : undefined,
-      updatedAt: isAdmin ? item.sys.updatedAt : undefined,
-      archivedAt: isAdmin ? item.sys.archivedAt : undefined,
-    };
-  });
 
   const publishEntryById = async (entryId) => {
     try {
@@ -270,6 +247,7 @@ const Home = (props) => {
                     updateBlogPost={updateContentfulEntry}
                     preTitle={contentfuObj.title}
                     preRichContent={contentfuObj.textContent}
+                    preAuthor={contentfuObj.author}
                   />
                 </>
               )}
@@ -287,7 +265,7 @@ const Home = (props) => {
 
 export async function getStaticProps() {
   try {
-    const items = await loadContentfulEntries(isAdmin);
+    const items = await getEntriesOnLanding();
 
     return {
       props: {

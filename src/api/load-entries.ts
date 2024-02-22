@@ -1,3 +1,4 @@
+import { isAdmin } from '@/pages';
 import {
   contentfulClient,
   contentfulManagementClient,
@@ -9,6 +10,53 @@ const getSpaceAndEnv = async () => {
   );
   const environment = await space.getEnvironment('master');
   return environment;
+};
+
+export const getEntriesOnLanding = async () => {
+  const items = await getEntriesAdmin();
+
+  const contentfulData = await Promise.all(
+    items.map(async (item) => {
+      const title = isAdmin ? item.fields.title['en-US'] : item.fields.title;
+
+      let author = null;
+
+      if (item.fields?.author) {
+        try {
+          const authorDetails = await getAuthorByIdAdmin(
+            item.fields.author['en-US'].sys.id,
+          );
+          author = authorDetails.fields.name['en-US'];
+        } catch (error) {
+          console.log('## couldnt get authors name');
+        }
+      }
+
+      const textContent = isAdmin
+        ? item.fields.richText['en-US'].content[0].content[0].value
+        : item.fields.richText.content.map((nestedRichText) => {
+            const textNode = nestedRichText.content[0];
+            const textContent = textNode ? textNode.value : '';
+
+            return textContent;
+          });
+
+      return {
+        id: item.sys.id,
+        title,
+        textContent,
+        isArchived: isAdmin && item.sys.archivedAt !== undefined,
+        publishedAt: item.sys.publishedAt || null, // take over isPublished
+        createdAt: isAdmin ? item.sys.createdAt : null,
+        updatedAt: isAdmin ? item.sys.updatedAt : null,
+        archivedAt:
+          isAdmin && item.sys?.archivedAt ? item.sys.archivedAt : null,
+        author,
+      };
+    }),
+  );
+
+  return contentfulData;
 };
 
 const getEntriesAdmin = async () => {
