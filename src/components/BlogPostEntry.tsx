@@ -59,7 +59,7 @@ const BlogPostEntry = ({
     }
 
     isAnEdit
-      ? await updateBlogPost({ entryId: id, title, content }) // need to add authorEntryId
+      ? await updateBlogPost({ entryId: id, title, content, authorEntryId }) // need to add authorEntryId
       : await createBlogPost({ title, content, authorEntryId });
   };
 

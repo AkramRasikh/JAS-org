@@ -1,10 +1,10 @@
 import BlogPostEntry from '@/components/BlogPostEntry';
-import { contentfulManagementClient } from '@/utils/contentful';
 import { useRouter } from 'next/router';
 
 import { useEffect } from 'react';
 import { isAdmin } from '.';
 import { getAuthorContentTypes, getBlogContentTypes } from '@/api/load-entries';
+import { createBlogPost } from '@/api/blog-entry';
 
 const AddBlogPage = (props) => {
   const titleValidation = props.blogValidationRules.title;
@@ -25,59 +25,6 @@ const AddBlogPage = (props) => {
       router.push('/');
     }
   }, [isAdmin, router]);
-
-  const createBlogPost = async ({ title, content, authorEntryId }) => {
-    try {
-      const space = await contentfulManagementClient.getSpace(
-        process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
-      );
-      const environment = await space.getEnvironment('master');
-
-      // Create a new entry
-      const entry = await environment.createEntry('blogPost', {
-        fields: {
-          title: { 'en-US': title },
-          richText: {
-            'en-US': {
-              nodeType: 'document',
-              data: {},
-              content: [
-                {
-                  nodeType: 'paragraph',
-                  data: {},
-                  content: [
-                    {
-                      nodeType: 'text',
-                      value: content,
-                      marks: [],
-                      data: {},
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-          author: {
-            'en-US': {
-              sys: {
-                type: 'Link',
-                linkType: 'Entry',
-                id: authorEntryId, // ID of the author entry you want to link
-              },
-            },
-          },
-        },
-      });
-
-      console.log('Blog post created:', entry);
-      router.push({
-        pathname: '/',
-        query: { created: 'true' },
-      });
-    } catch (error) {
-      console.error('Error creating blog post:', error);
-    }
-  };
 
   if (!isAdmin) {
     return null;

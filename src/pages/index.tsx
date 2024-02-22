@@ -4,6 +4,7 @@ import Link from 'next/link';
 import BlogPostEntry from '@/components/BlogPostEntry';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { updateContentfulEntry } from '@/api/blog-entry';
 
 export const isAdmin = true;
 
@@ -95,46 +96,6 @@ const Home = (props) => {
     } catch (error) {
       console.error('Error deleting entry:', error);
       throw error;
-    }
-  };
-  const updateContentfulEntry = async ({ entryId, title, content }) => {
-    try {
-      const space = await contentfulManagementClient.getSpace(
-        process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID as string,
-      );
-      const environment = await space.getEnvironment('master');
-      const entry = await environment.getEntry(entryId);
-
-      entry.fields = {
-        ...entry.fields,
-        title: { 'en-US': title },
-        richText: {
-          'en-US': {
-            nodeType: 'document',
-            data: {},
-            content: [
-              {
-                nodeType: 'paragraph',
-                data: {},
-                content: [
-                  {
-                    nodeType: 'text',
-                    value: content,
-                    marks: [],
-                    data: {},
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
-      // Save the changes
-      await entry.update();
-      console.log('Entry updated successfully.');
-    } catch (error) {
-      console.error('Error updating Contentful entry:', error);
     }
   };
 
