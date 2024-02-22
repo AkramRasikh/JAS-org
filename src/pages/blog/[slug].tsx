@@ -50,6 +50,7 @@ const BlogPostPage = (props) => {
         publishedAt={entryData.publishedAt}
         updatedAt={entryData.updatedAt}
         archivedAt={entryData.archivedAt}
+        createdAt={entryData.createdAt}
         authorName={entryData?.authorName}
       />
       {jsxReadyText?.map((text) => text)}

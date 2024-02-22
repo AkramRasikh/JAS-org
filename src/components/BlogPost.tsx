@@ -18,6 +18,7 @@ const BlogPost = ({
   updatedAt,
   authorName,
   archivedAt,
+  createdAt,
 }) => {
   if (!slug || !title) {
     return null;
@@ -28,6 +29,7 @@ const BlogPost = ({
   const hasBeenUpdated = updatedAt === publishedAt;
 
   const publishedDateObject = new Date(publishedAt);
+  const createdAtDateObject = new Date(createdAt);
 
   if (hasBeenUpdated) {
     updatedAtDateObject = new Date(updatedAt);
@@ -39,13 +41,22 @@ const BlogPost = ({
     'en-US',
     options,
   );
+  const formattedCreatedAtDate = createdAtDateObject.toLocaleString(
+    'en-US',
+    options,
+  );
 
   return (
     <div>
       <h1>{title}</h1>
       <p>{content}</p>
       <DisqusComments slug={slug} title={title} />
-      <p>Published: {formattedPublishedDate}</p>
+      <p>Published: {formattedCreatedAtDate}</p>
+      {isAdmin && (
+        <>
+          <p>Date was created: {formattedCreatedAtDate}</p>
+        </>
+      )}
       {isAdmin && hasBeenUpdated && (
         <>
           <p>Last edited: {formattedPublishedDate}</p>
