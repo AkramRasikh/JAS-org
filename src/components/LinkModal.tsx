@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const LinkModal = () => {
+const LinkModal = ({ prelinkText, setOverrideOpen }) => {
   const [linkText, setLinkText] = useState('');
   const [linkTarget, setLinkTarget] = useState('');
   const isSubmitDisabled = linkText === '' || linkTarget === '';
+
+  useEffect(() => {
+    setLinkText(prelinkText);
+  }, []);
 
   const handleLinkTextChange = (e) => {
     setLinkText(e.target.value);
@@ -13,8 +17,13 @@ const LinkModal = () => {
     setLinkTarget(e.target.value);
   };
 
+  const handleOverrideClose = () => {
+    setOverrideOpen(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setOverrideOpen(false);
     // add logic here
   };
 
@@ -26,6 +35,9 @@ const LinkModal = () => {
         padding: '5px',
       }}
     >
+      <button onClick={handleOverrideClose}>
+        <span>❌</span>
+      </button>
       <form onSubmit={handleSubmit}>
         <label>
           Link Text:
