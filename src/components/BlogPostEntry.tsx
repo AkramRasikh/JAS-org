@@ -68,6 +68,11 @@ const BlogPostEntry = ({
   return (
     <form onSubmit={handleSubmit}>
       <div>
+        <button>
+          <span>🔗</span>
+        </button>
+      </div>
+      <div>
         <label htmlFor='title'>Title:</label>
         <input
           type='text'
