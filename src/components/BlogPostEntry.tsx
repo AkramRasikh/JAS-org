@@ -102,12 +102,12 @@ const BlogPostEntry = ({
           setOverrideOpen={handleOverrideClose}
         />
       )}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <button onClick={handleHyperlinkClick}>
-            <span>🔗</span>
-          </button>
-        </div>
+      <div>
+        <button onClick={handleHyperlinkClick}>
+          <span>🔗</span>
+        </button>
+      </div>
+      <form>
         <div>
           <label htmlFor='title'>Title:</label>
           <input
@@ -157,7 +157,7 @@ const BlogPostEntry = ({
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
-        <button type='submit' disabled={disableSubmit}>
+        <button type='submit' disabled={disableSubmit} onClick={handleSubmit}>
           Submit
         </button>
       </form>

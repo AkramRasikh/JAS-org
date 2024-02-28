@@ -38,7 +38,7 @@ const LinkModal = ({ prelinkText, setOverrideOpen }) => {
       <button onClick={handleOverrideClose}>
         <span>❌</span>
       </button>
-      <form onSubmit={handleSubmit}>
+      <form>
         <label>
           Link Text:
           <input type='text' value={linkText} onChange={handleLinkTextChange} />
@@ -53,7 +53,11 @@ const LinkModal = ({ prelinkText, setOverrideOpen }) => {
           />
         </label>
         <br />
-        <button type='submit' disabled={isSubmitDisabled}>
+        <button
+          type='submit'
+          disabled={isSubmitDisabled}
+          onClick={handleSubmit}
+        >
           Insert
         </button>
       </form>
