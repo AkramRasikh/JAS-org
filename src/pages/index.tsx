@@ -216,6 +216,9 @@ const Home = (props) => {
               <Link href={`/blog/${contentfuObj.id}`}>
                 Continue reading blog!
               </Link>
+              <Link href={`/blog/rich-text/${contentfuObj.id}`}>
+                Check rich text
+              </Link>
             </div>
           );
         })}

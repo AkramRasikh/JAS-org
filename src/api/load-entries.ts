@@ -90,6 +90,20 @@ const getEntryByIdViewer = async (id) => {
   return entry;
 };
 
+export const loadContentfulEntryByIdExp = async (
+  isAdmin: boolean = true,
+  id,
+) => {
+  const entry = isAdmin
+    ? await getEntryByIdAdmin(id)
+    : await getEntryByIdViewer(id);
+
+  const textContent = entry.fields.richText;
+
+  return {
+    textContent,
+  };
+};
 export const loadContentfulEntryById = async (isAdmin: boolean = true, id) => {
   const entry = isAdmin
     ? await getEntryByIdAdmin(id)
