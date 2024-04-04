@@ -19,12 +19,18 @@ export const CheckIfNeedsHyperLink = ({
   children,
   nodeType,
   data,
+  value,
   content,
+  marks,
 }) => {
   const isHyperlink = nodeType === 'hyperlink';
 
   if (isHyperlink) {
     return <Hyperlink data={data} content={content} />;
+  }
+
+  if (value) {
+    return <MarkerWrapper value={value} marks={marks} />;
   }
 
   return <MarkerChecks content={content}>{children}</MarkerChecks>;
