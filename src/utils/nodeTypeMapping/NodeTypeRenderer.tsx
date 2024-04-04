@@ -22,12 +22,7 @@ const underline = 'underline';
 
 const NodeTypeRenderer = ({ nodeType, children, ...rest }) => {
   const renderFunction = nodeTypeToHTMLKey[nodeType];
-
-  if (renderFunction) {
-    return renderFunction(children, rest);
-  } else {
-    return <span>{children}</span>;
-  }
+  return renderFunction(children, rest);
 };
 
 const ConditionalStyleWrapper = ({ condition, style, children }) => {
@@ -38,7 +33,7 @@ const ConditionalStyleWrapper = ({ condition, style, children }) => {
   return <>{children}</>;
 };
 
-export const TextMarker = ({ content, children, ...rest }) => {
+export const TextMarker = ({ content, children }) => {
   if (!content) return children;
 
   return content.map((contentWidget, index) => {
@@ -51,24 +46,19 @@ export const TextMarker = ({ content, children, ...rest }) => {
 
 export const MarkerWrapper = ({ marks, value }) => {
   if (!marks?.length) return value;
-  return marks.map((mark, index) => {
-    return (
-      <ConditionalStyleWrapper
-        key={index}
-        style={italic}
-        condition={italic === mark.type}
-      >
-        <ConditionalStyleWrapper style={bold} condition={bold === mark.type}>
-          <ConditionalStyleWrapper
-            style={underline}
-            condition={underline === mark.type}
-          >
-            {value}
-          </ConditionalStyleWrapper>
+  const isBold = marks.some((mark) => mark.type === bold);
+  const isUnderline = marks.some((mark) => mark.type === underline);
+  const isItalic = marks.some((mark) => mark.type === italic);
+
+  return (
+    <ConditionalStyleWrapper style={italic} condition={isItalic}>
+      <ConditionalStyleWrapper style={bold} condition={isBold}>
+        <ConditionalStyleWrapper style={underline} condition={isUnderline}>
+          {value}
         </ConditionalStyleWrapper>
       </ConditionalStyleWrapper>
-    );
-  });
+    </ConditionalStyleWrapper>
+  );
 };
 
 export default NodeTypeRenderer;

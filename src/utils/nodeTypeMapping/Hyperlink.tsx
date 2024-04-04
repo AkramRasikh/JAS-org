@@ -1,14 +1,12 @@
-import NodeTypeRenderer from './NodeTypeRenderer';
+import { MarkerChecks } from './Content';
 
 const Hyperlink = ({ data, content }) => {
   const url = data.uri;
 
   return (
-    <a href={url} target='_blank'>
+    <a href={url} target='_blank' style={{ textDecoration: 'none' }}>
       {content.map((contentItem, index) => (
-        <NodeTypeRenderer nodeType={contentItem.nodeType} key={index}>
-          {contentItem.value}
-        </NodeTypeRenderer>
+        <MarkerChecks key={index} content={contentItem} />
       ))}
     </a>
   );
