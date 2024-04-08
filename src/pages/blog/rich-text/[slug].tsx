@@ -17,7 +17,7 @@ const BlogPostPageExp = (props) => {
       <Link href={'/'}>Back home!!</Link>
       <div>
         <h1>content mapped</h1>
-        <ul>
+        <ul style={{ listStyle: 'none' }}>
           {content.map((contentWidget, index) => {
             const nestedContent = contentWidget.content;
             return (

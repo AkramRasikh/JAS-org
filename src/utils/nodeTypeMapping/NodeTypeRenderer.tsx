@@ -1,4 +1,7 @@
+import BlockQuote from './BlockQuote';
 import Hyperlink from './Hyperlink';
+import OL from './OL';
+import UL from './UL';
 
 const nodeTypeToHTMLKey = {
   'heading-1': (children) => <h1>h1: {children}</h1>,
@@ -11,9 +14,16 @@ const nodeTypeToHTMLKey = {
   paragraph: (children) => <p>para: {children}</p>,
   hyperlink: (props, rest) => <Hyperlink {...props} {...rest} />,
   hr: () => <hr style={{ backgroundColor: 'purple', padding: '5px' }} />,
+  blockquote: (children, props) => (
+    <BlockQuote {...props}>{children}</BlockQuote>
+  ),
   underline: (children) => <u>{children}</u>,
   bold: (children) => <strong>{children}</strong>,
   italic: (children) => <em>{children}</em>,
+  //
+  'unordered-list': (children) => <UL>{children}</UL>,
+  'ordered-list': (children) => <OL>{children}</OL>,
+  'list-item': (children) => <li>{children}</li>,
 };
 
 const italic = 'italic';
@@ -22,7 +32,10 @@ const underline = 'underline';
 
 const NodeTypeRenderer = ({ nodeType, children, ...rest }) => {
   const renderFunction = nodeTypeToHTMLKey[nodeType];
-  return renderFunction(children, rest);
+  if (renderFunction) {
+    return renderFunction(children, rest);
+  }
+  return null;
 };
 
 const ConditionalStyleWrapper = ({ condition, style, children }) => {

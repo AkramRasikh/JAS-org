@@ -1,6 +1,7 @@
 import React from 'react';
 import { MarkerWrapper, TextMarker } from './NodeTypeRenderer';
 import Hyperlink from './Hyperlink';
+import BlockQuote from './BlockQuote';
 
 export const MarkerChecks = ({ content }) => {
   if (!content) return null;
@@ -15,18 +16,18 @@ export const MarkerChecks = ({ content }) => {
   return <TextMarker content={content}>{nestedContentWidgetValue}</TextMarker>;
 };
 
-export const CheckIfNeedsHyperLink = ({
-  children,
-  nodeType,
-  data,
-  value,
-  content,
-  marks,
+const Content = ({
+  nestedContent: { children, nodeType, data, value, content, marks },
 }) => {
   const isHyperlink = nodeType === 'hyperlink';
+  const isBlockQuote = nodeType === 'blockquote';
 
   if (isHyperlink) {
     return <Hyperlink data={data} content={content} />;
+  }
+
+  if (isBlockQuote) {
+    return <BlockQuote content={content} />;
   }
 
   if (value) {
@@ -34,10 +35,6 @@ export const CheckIfNeedsHyperLink = ({
   }
 
   return <MarkerChecks content={content}>{children}</MarkerChecks>;
-};
-
-const Content = ({ nestedContent }) => {
-  return <CheckIfNeedsHyperLink {...nestedContent} />;
 };
 
 export default Content;
