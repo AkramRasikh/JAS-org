@@ -24,11 +24,21 @@ const nodeTypeToHTMLKey = {
   'unordered-list': (children) => <UL>{children}</UL>,
   'ordered-list': (children) => <OL>{children}</OL>,
   'list-item': (children) => <li>{children}</li>,
+  // quotes
+  superscript: (children) => <sup>{children}</sup>,
+  subscript: (children) => (
+    <sup style={{ verticalAlign: 'sub' }}>{children}</sup>
+  ),
+  // code -> not sure though
+  code: (children) => <code>{children}</code>,
 };
 
 const italic = 'italic';
 const bold = 'bold';
 const underline = 'underline';
+const superscript = 'superscript';
+const subscript = 'subscript';
+const code = 'code';
 
 const NodeTypeRenderer = ({ nodeType, children, ...rest }) => {
   const renderFunction = nodeTypeToHTMLKey[nodeType];
@@ -62,12 +72,24 @@ export const MarkerWrapper = ({ marks, value }) => {
   const isBold = marks.some((mark) => mark.type === bold);
   const isUnderline = marks.some((mark) => mark.type === underline);
   const isItalic = marks.some((mark) => mark.type === italic);
+  const isSuperSubscript = marks.some((mark) => mark.type === superscript);
+  const isSubscript = marks.some((mark) => mark.type === subscript);
+  const isCode = marks.some((mark) => mark.type === code);
 
   return (
     <ConditionalStyleWrapper style={italic} condition={isItalic}>
       <ConditionalStyleWrapper style={bold} condition={isBold}>
         <ConditionalStyleWrapper style={underline} condition={isUnderline}>
-          {value}
+          <ConditionalStyleWrapper style={subscript} condition={isSubscript}>
+            <ConditionalStyleWrapper
+              style={superscript}
+              condition={isSuperSubscript}
+            >
+              <ConditionalStyleWrapper style={code} condition={isCode}>
+                {value}
+              </ConditionalStyleWrapper>
+            </ConditionalStyleWrapper>
+          </ConditionalStyleWrapper>
         </ConditionalStyleWrapper>
       </ConditionalStyleWrapper>
     </ConditionalStyleWrapper>
